@@ -1,0 +1,58 @@
+# ========================
+# File di build e output
+# ========================
+bin/
+obj/
+out/
+*.exe
+*.dll
+*.pdb
+*.log
+*.cache
+
+# ========================
+# File temporanei di Visual Studio
+# ========================
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ========================
+# File di sistema
+# ========================
+*.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ========================
+# Librerie web e pacchetti client
+# ========================
+wwwroot/lib/
+node_modules/
+bower_components/
+*.min.js.map
+*.min.css.map
+
+# ========================
+# File di configurazione locali
+# ========================
+*.local.json
+*.env
+secrets.json
+
+# ========================
+# Backup e temporanei
+# ========================
+~$*
+*.tmp
+*.bak
+
+# ========================
+# Pubblicazioni temporanee
+# ========================
+publish/
+wwwroot/dist/
