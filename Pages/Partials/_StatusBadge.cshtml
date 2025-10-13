@@ -1,0 +1,3 @@
+@model ClinicBooking.Web.Models.Booking
+@{ var cls = Model.Status switch { ClinicBooking.Web.Models.BookingStatus.Confirmed => "badge bg-success", ClinicBooking.Web.Models.BookingStatus.Completed => "badge bg-info text-dark", ClinicBooking.Web.Models.BookingStatus.Cancelled => "badge bg-danger", _ => "badge bg-secondary"}; var text = Model.Status switch { ClinicBooking.Web.Models.BookingStatus.Confirmed => "Confermata", ClinicBooking.Web.Models.BookingStatus.Completed => "Eseguita", ClinicBooking.Web.Models.BookingStatus.Cancelled => "Annullata", _ => "Pianificata"}; }
+<span class="@cls">@text</span>

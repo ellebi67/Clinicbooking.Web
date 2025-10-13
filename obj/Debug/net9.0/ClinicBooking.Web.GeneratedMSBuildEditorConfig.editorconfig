@@ -28,6 +28,10 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
+[C:/Users/ELLEBI/Dropbox/_CLIENTI/ASGS/CORSO_AI/RAZOR/ClinicBooking/ClinicBooking.Web/Pages/Agenda/Agenda.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWdlbmRhXEFnZW5kYS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/ELLEBI/Dropbox/_CLIENTI/ASGS/CORSO_AI/RAZOR/ClinicBooking/ClinicBooking.Web/Pages/Bookings/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQm9va2luZ3NcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -66,6 +70,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/ELLEBI/Dropbox/_CLIENTI/ASGS/CORSO_AI/RAZOR/ClinicBooking/ClinicBooking.Web/Pages/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ELLEBI/Dropbox/_CLIENTI/ASGS/CORSO_AI/RAZOR/ClinicBooking/ClinicBooking.Web/Pages/Partials/_StatusBadge.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUGFydGlhbHNcX1N0YXR1c0JhZGdlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/ELLEBI/Dropbox/_CLIENTI/ASGS/CORSO_AI/RAZOR/ClinicBooking/ClinicBooking.Web/Pages/Patients/Create.cshtml]

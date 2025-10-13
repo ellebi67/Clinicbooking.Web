@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClinicBooking.Web.Data;
 
+
+
 public class AppDbContext : DbContext
 {
   public AppDbContext(DbContextOptions<AppDbContext> opts) : base(opts) { }
@@ -24,42 +26,89 @@ public class AppDbContext : DbContext
   {
     base.OnModelCreating(mb);
 
+    // =======================================
+    // CONFIGURAZIONE ENTITÀ: Booking
+    // =======================================
     mb.Entity<Booking>(eb =>
-            {
-              eb.ToTable("Bookings"); //Nome tabella: se non esiste, verrà creata con le migrazioni
+    {
+      eb.ToTable("Bookings");
+      // Nome tabella sul database SQL
 
+      eb.HasKey(b => b.BookingId);
+      // Chiave primaria
 
-              eb.HasKey(b => b.BookingId);
+      // =====================================================
+      // GESTIONE CONCORRENZA (versione ottimistica)
+      // =====================================================
+      eb.Property(b => b.RowVersion).IsRowVersion();
 
-              //Concorrenza
+      // =====================================================
+      // NUOVE PROPRIETÀ (Status, Durata, Data/Ora separate)
+      // =====================================================
 
-              eb.Property(b => b.RowVersion).IsRowVersion();
+      // Enum BookingStatus salvato come stringa nel DB
+      eb.Property(b => b.Status)
+    .HasConversion<string>()
+    .HasMaxLength(20)
+    .HasDefaultValue(BookingStatus.Scheduled);
 
-              //FK esplicite per evitare shadow properties
+      // Durata in minuti, default 30
+      eb.Property(b => b.DurationMinutes)
+    .HasDefaultValue(30);
 
-              eb.HasOne(b => b.Patient)
-                .WithMany()  // oppure .WithMany(p => p.Bookings) se aggiungi la collection in Patient
-                .HasForeignKey(b => b.PatientId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_Bookings_Patients_PatientId");
+      // Conversione DateOnly → SQL date
+      eb.Property(b => b.BookingDate)
+    .HasConversion(
+        v => v.ToDateTime(TimeOnly.MinValue),    // scrittura nel DB
+        v => DateOnly.FromDateTime(v))          // lettura dal DB
+    .HasColumnType("date");
 
-              eb.HasOne(b => b.Doctor)
-             .WithMany()  //  oppure  .WithMany(d => d.Bookings)
-             .HasForeignKey(b => b.DoctorId)
-             .OnDelete(DeleteBehavior.Restrict)
-             .HasConstraintName("FK_Bookings_Doctors_DoctorId");
+      // Conversione TimeOnly → SQL time
+      eb.Property(b => b.BookingTime)
+    .HasConversion(
+        v => v.ToTimeSpan(),                    // scrittura nel DB
+        v => TimeOnly.FromTimeSpan(v))          // lettura dal DB
+    .HasColumnType("time");
 
-              eb.HasOne(b => b.Specialization)
-             .WithMany()  //oppure .WithMany(s => s.Bookings)
-             .HasForeignKey(b => b.SpecializationId)
-             .OnDelete(DeleteBehavior.Restrict)
-             .HasConstraintName("FK_Bookings_Specializations_SpecializationId");
+      // =====================================================
+      // RELAZIONI (FK esplicite)
+      // =====================================================
 
-              //Indici utili per velocizzare ricerche
+      eb.HasOne(b => b.Patient)
+    .WithMany()
+    .HasForeignKey(b => b.PatientId)
+    .OnDelete(DeleteBehavior.Restrict)
+    .HasConstraintName("FK_Bookings_Patients_PatientId");
 
-              eb.HasIndex(b => b.DateTime).HasDatabaseName("IX_Bookings_DateTime");
-              eb.HasIndex(b => new { b.DoctorId, b.DateTime }).HasDatabaseName("IX_Bookings_Doctor_DateTime");
-            });
+      eb.HasOne(b => b.Doctor)
+    .WithMany()
+    .HasForeignKey(b => b.DoctorId)
+    .OnDelete(DeleteBehavior.Restrict)
+    .HasConstraintName("FK_Bookings_Doctors_DoctorId");
+
+      eb.HasOne(b => b.Specialization)
+    .WithMany()
+    .HasForeignKey(b => b.SpecializationId)
+    .OnDelete(DeleteBehavior.Restrict)
+    .HasConstraintName("FK_Bookings_Specializations_SpecializationId");
+
+      // =====================================================
+      // INDICI per performance su ricerche e vista Agenda
+      // =====================================================
+
+      eb.HasIndex(b => b.DateTime)
+    .HasDatabaseName("IX_Bookings_DateTime");
+
+      eb.HasIndex(b => new { b.DoctorId, b.DateTime })
+    .HasDatabaseName("IX_Bookings_Doctor_DateTime");
+
+      // Indici per la vista calendario (nuovi)
+      eb.HasIndex(b => b.BookingDate)
+    .HasDatabaseName("IX_Bookings_Date");
+
+      eb.HasIndex(b => new { b.DoctorId, b.BookingDate, b.BookingTime })
+    .HasDatabaseName("IX_Bookings_Doctor_Date_Time");
+    });
 
 
 

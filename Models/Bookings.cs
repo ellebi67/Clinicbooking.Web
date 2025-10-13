@@ -7,8 +7,25 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClinicBooking.Web.Models
 {
+
+    // Elenco degli stati gestiti a UI (badge), query e regole
+    public enum BookingStatus
+    {
+        // Prenotazione pianificata ma non ancora confermata
+        Scheduled = 0,
+
+        // Confermata (es. telefonata/mail di conferma)
+        Confirmed = 1,
+
+        // Appuntamento eseguito
+        Completed = 2,
+
+        // Appuntamento annullato
+        Cancelled = 3
+    }
     // La classe rappresenta un appuntamento (Booking)
     public class Booking
+
     {
         // Id univoco dell'appuntamento
         public int BookingId { get; set; }
@@ -44,5 +61,12 @@ namespace ClinicBooking.Web.Models
 
         // RowVersion per la concorrenza ottimistica (timestamp)
         public byte[]? RowVersion { get; set; }
+
+        public BookingStatus Status { get; set; } = BookingStatus.Scheduled;
+        public int DurationMinutes { get; set; } = 30;
+        public DateOnly BookingDate { get; set; }
+        public TimeOnly BookingTime { get; set; }
+
+
     }
 }

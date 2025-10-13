@@ -43,6 +43,20 @@ public class CreateModel : PageModel
             await LoadSelectListsAsync();
             return Page();
         }
+        // ➕ Calcolo automatico dei campi calendario per la vista Agenda
+        Booking.BookingDate = DateOnly.FromDateTime(Booking.DateTime);  // solo data (per filtri Agenda)
+        Booking.BookingTime = TimeOnly.FromDateTime(Booking.DateTime);  // solo ora  (per ordinamenti/slot)
+
+        // (opzionale) vincolo slot 30'
+        // ➕ Controllo slot 30 minuti
+        var minutes = Booking.BookingTime.Minute;
+        if (minutes != 0 && minutes != 30)
+        {
+            ModelState.AddModelError("Booking.BookingTime", "Usare slot da 30 minuti (es. 10:00, 10:30).");
+            // Ricarica il form con l’errore
+            await LoadSelectListsAsync();   // ✅ usa il tuo helper
+            return Page();
+        }
 
         _context.Bookings.Add(Booking);
         await _context.SaveChangesAsync();

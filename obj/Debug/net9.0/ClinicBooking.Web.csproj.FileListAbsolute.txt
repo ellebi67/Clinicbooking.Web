@@ -226,3 +226,4 @@ C:\Users\ELLEBI\Dropbox\_CLIENTI\ASGS\CORSO_AI\RAZOR\ClinicBooking\ClinicBooking
 C:\Users\ELLEBI\Dropbox\_CLIENTI\ASGS\CORSO_AI\RAZOR\ClinicBooking\ClinicBooking.Web\obj\Debug\net9.0\ClinicBooking.Web.pdb
 C:\Users\ELLEBI\Dropbox\_CLIENTI\ASGS\CORSO_AI\RAZOR\ClinicBooking\ClinicBooking.Web\obj\Debug\net9.0\ClinicBooking.Web.genruntimeconfig.cache
 C:\Users\ELLEBI\Dropbox\_CLIENTI\ASGS\CORSO_AI\RAZOR\ClinicBooking\ClinicBooking.Web\obj\Debug\net9.0\ref\ClinicBooking.Web.dll
+C:\Users\ELLEBI\Dropbox\_CLIENTI\ASGS\CORSO_AI\RAZOR\ClinicBooking\ClinicBooking.Web\obj\Debug\net9.0\ClinicBooking.Web.sourcelink.json
