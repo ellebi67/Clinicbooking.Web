@@ -1,0 +1,142 @@
+@page "{id:int}"
+@model ClinicBooking.Web.Pages.Pazienti.DetailsModel
+@{
+    ViewData["Title"] = "Dettagli Paziente";
+}
+
+<h1 class="mb-3">Dettagli Paziente</h1>
+
+@if (TempData["Messaggio"] is string msg)
+{
+    <div class="alert alert-info" role="status">@msg</div>
+}
+
+<section aria-labelledby="anagrafica">
+    <h2 id="anagrafica" class="h4">Anagrafica</h2>
+    @if (Model.Patient is not null)
+    {
+        <dl class="row">
+            <dt class="col-sm-3">Nome</dt>
+            <dd class="col-sm-9">@Model.Patient.Name</dd>
+
+            <dt class="col-sm-3">Codice Fiscale</dt>
+            <dd class="col-sm-9">@(Model.Patient.TaxCode ?? "—")</dd>
+
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@(Model.Patient.Email ?? "—")</dd>
+
+            <dt class="col-sm-3">Telefono</dt>
+            <dd class="col-sm-9">@(Model.Patient.Phone ?? "—")</dd>
+        </dl>
+    }
+</section>
+
+<hr />
+
+<section aria-labelledby="assigned">
+    <h2 id="assigned" class="h4">Dottori assegnati</h2>
+
+    @if (Model.Assigned.Count == 0)
+    {
+        <p>Nessun dottore assegnato.</p>
+    }
+    else
+    {
+        <ul class="list-group mb-3">
+            @foreach (var d in Model.Assigned)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>@d.Name</span>
+                    <form method="post" asp-page-handler="Remove" class="m-0">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="Input.PatientId" value="@Model.Patient!.PatientId" />
+                        <input type="hidden" name="Input.DoctorId" value="@d.DoctorId" />
+                        <input type="hidden" name="Input.Query" value="@Model.Input.Query" />
+                        <input type="hidden" name="Input.Page" value="@Model.Input.Page" />
+                        <button type="submit" class="btn btn-outline-danger btn-sm"
+                            aria-label="Rimuovi @d.Name da questo paziente">
+                            Rimuovi
+                        </button>
+                    </form>
+                </li>
+            }
+        </ul>
+    }
+</section>
+
+<section aria-labelledby="add">
+    <h2 id="add" class="h4">Aggiungi dottori</h2>
+
+    <form method="get" class="row g-2 mb-3">
+        <input type="hidden" name="id" value="@Model.Patient!.PatientId" />
+        <div class="col-auto">
+            <label class="visually-hidden" for="q">Cerca</label>
+            <input id="q" name="q" value="@Model.Input.Query" class="form-control" placeholder="Cerca per nome..." />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Cerca</button>
+            <a class="btn btn-secondary" href="@Url.Page(null, new { id = Model.Patient!.PatientId })">Pulisci</a>
+        </div>
+    </form>
+
+    @if (Model.Assignable.Count == 0)
+    {
+        <p>Nessun dottore disponibile per l’assegnazione.</p>
+    }
+    else
+    {
+        <ul class="list-group">
+            @foreach (var d in Model.Assignable)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>@d.Name</span>
+                    <form method="post" asp-page-handler="Add" class="m-0">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="Input.PatientId" value="@Model.Patient!.PatientId" />
+                        <input type="hidden" name="Input.DoctorId" value="@d.DoctorId" />
+                        <input type="hidden" name="Input.Query" value="@Model.Input.Query" />
+                        <input type="hidden" name="Input.Page" value="@Model.Input.Page" />
+                        <button type="submit" class="btn btn-success btn-sm" aria-label="Aggiungi @d.Name a questo paziente">
+                            Aggiungi
+                        </button>
+                    </form>
+                </li>
+            }
+        </ul>
+    }
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="mt-3" aria-label="Paginazione dottori assegnabili">
+            <ul class="pagination">
+                <li class="page-item @(Model.Input.Page <= 1 ? "disabled" : "")">
+                    <a class="page-link"
+                        href="@Url.Page(null, new { id = Model.Patient!.PatientId, q = Model.Input.Query, page = 1 })">«
+                        Prima</a>
+                </li>
+                <li class="page-item @(Model.Input.Page <= 1 ? "disabled" : "")">
+                    <a class="page-link"
+                        href="@Url.Page(null, new { id = Model.Patient!.PatientId, q = Model.Input.Query, page = Model.Input.Page - 1 })">‹
+                        Precedente</a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">Pagina @Model.Input.Page di @Model.TotalPages</span>
+                </li>
+                <li class="page-item @(Model.Input.Page >= Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link"
+                        href="@Url.Page(null, new { id = Model.Patient!.PatientId, q = Model.Input.Query, page = Model.Input.Page + 1 })">Successiva
+                        ›</a>
+                </li>
+                <li class="page-item @(Model.Input.Page >= Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link"
+                        href="@Url.Page(null, new { id = Model.Patient!.PatientId, q = Model.Input.Query, page = Model.TotalPages })">Ultima
+                        »</a>
+                </li>
+            </ul>
+        </nav>
+    }
+</section>
+
+<div class="mt-3">
+    <a class="btn btn-outline-secondary" asp-page="./Index">Torna all’elenco pazienti</a>
+</div>

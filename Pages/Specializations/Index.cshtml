@@ -1,0 +1,33 @@
+@page
+@model ClinicBooking.Web.Pages.Specializations.IndexModel
+@{
+    ViewData["Title"] = "Specializzazioni";
+}
+<h2>Specializzazioni</h2>
+
+<p>
+    <a class="btn btn-primary" asp-page="Create">Nuova Specializzazione</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model.List)
+        {
+            <tr>
+                <td>@s.Name</td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-primary" asp-page="Edit"
+                        asp-route-id="@s.SpecializationId">Modifica</a>
+                    <a class="btn btn-sm btn-outline-danger" asp-page="Delete"
+                        asp-route-id="@s.SpecializationId">Elimina</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

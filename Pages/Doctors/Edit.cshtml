@@ -1,0 +1,52 @@
+@page "{id:int}"
+@model ClinicBooking.Web.Pages.Doctors.EditModel
+@{
+    ViewData["Title"] = "Modifica dottore";
+}
+<h2>Modifica dottore</h2>
+
+<form method="post" class="mt-3">
+    <input type="hidden" asp-for="Input.DoctorId" />
+
+    <div class="mb-3">
+        <label asp-for="Input.Name" class="form-label"></label>
+        <input asp-for="Input.Name" class="form-control" />
+        <span asp-validation-for="Input.Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Email" class="form-label"></label>
+        <input asp-for="Input.Email" class="form-control" />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Phone" class="form-label"></label>
+        <input asp-for="Input.Phone" class="form-control" />
+        <span asp-validation-for="Input.Phone" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Specializzazioni</label>
+        <div class="row">
+            @foreach (var opt in Model.Input.Options)
+            {
+                var checkedAttr = Model.Input.SelectedSpecializationIds.Contains(opt.Id) ? "checked" : "";
+                <div class="col-12 col-md-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="Input.SelectedSpecializationIds"
+                            value="@opt.Id" id="spec_@opt.Id" @checkedAttr />
+                        <label class="form-check-label" for="spec_@opt.Id">@opt.Name</label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <button class="btn btn-primary">Salva</button>
+    <a class="btn btn-secondary" asp-page="Index">Indietro</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

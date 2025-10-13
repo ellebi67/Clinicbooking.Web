@@ -1,0 +1,18 @@
+@page "{id:int}"
+@model ClinicBooking.Web.Pages.Patients.DetailsModel
+@{
+    ViewData["Title"] = "Dettagli Paziente";
+}
+<h2>Dettagli Paziente</h2>
+<dl class="row">
+    <dt class="col-sm-2">Nome</dt>
+    <dd class="col-sm-10">@Model.Item.Name</dd>
+    <dt class="col-sm-2">Email</dt>
+    <dd class="col-sm-10">@Model.Item.Email</dd>
+    <dt class="col-sm-2">Telefono</dt>
+    <dd class="col-sm-10">@Model.Item.Phone</dd>
+    <dt class="col-sm-2">Codice Fiscale</dt>
+    <dd class="col-sm-10">@Model.Item.TaxCode</dd>
+</dl>
+<a class="btn btn-secondary" asp-page="Index">Indietro</a>
+<a class="btn btn-primary" asp-page="Edit" asp-route-id="@Model.Item.PatientId">Modifica</a>

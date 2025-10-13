@@ -1,0 +1,22 @@
+@page "{id:int}"
+@model ClinicBooking.Web.Pages.Patients.DeleteModel
+@{
+    ViewData["Title"] = "Cancella Paziente";
+}
+<h2>Cancella Paziente</h2>
+<p class="text-danger">Confermi la cancellazione?</p>
+
+<dl class="row">
+    <dt class="col-sm-2">Nome</dt>
+    <dd class="col-sm-10">@Model.Item.Name</dd>
+    <dt class="col-sm-2">Email</dt>
+    <dd class="col-sm-10">@Model.Item.Email</dd>
+    <dt class="col-sm-2">Telefono</dt>
+    <dt class="col-sm-2">Telefono</dt>
+    <dd class="col-sm-10">@Model.Item.Phone</dd>
+</dl>
+
+<form method="post">
+    <button class="btn btn-danger">Cancella</button>
+    <a class="btn btn-secondary" asp-page="Index">Annulla</a>
+</form>

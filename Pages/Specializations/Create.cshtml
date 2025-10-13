@@ -1,0 +1,21 @@
+@page
+@model ClinicBooking.Web.Pages.Specializations.CreateModel
+@{
+    ViewData["Title"] = "Nuova specializzazione";
+}
+<h2>Nuova specializzazione</h2>
+
+<form method="post" class="mt-3">
+    <div class="mb-3">
+        <label asp-for="Input.Name" class="form-label"></label>
+        <input asp-for="Input.Name" class="form-control" />
+        <span asp-validation-for="Input.Name" class="text-danger"></span>
+    </div>
+
+    <button class="btn btn-primary">Salva</button>
+    <a class="btn btn-secondary" asp-page="Index">Indietro</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

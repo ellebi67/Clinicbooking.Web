@@ -1,0 +1,51 @@
+@page
+@model ClinicBooking.Web.Pages.Bookings.IndexModel
+@{
+    // Titolo pagina in italiano
+    ViewData["Title"] = "Elenco Prenotazioni";
+}
+
+<h1 class="mb-3">Elenco Prenotazioni</h1>
+
+@if (TempData["Messaggio"] is string m)
+{
+    <div class="alert alert-info">@m</div>
+}
+
+<p>
+    <!-- Pulsante per creare una nuova prenotazione -->
+    <a class="btn btn-success" asp-page="Create">Nuova prenotazione</a>
+</p>
+
+@if (Model.Items.Count == 0)
+{
+    <!-- Messaggio quando non ci sono appuntamenti -->
+    <p>Nessuna prenotazione presente.</p>
+}
+else
+{
+    <!-- Tabella con le prenotazioni -->
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Paziente</th>
+                <th>Dottore</th>
+                <th>Specializzazione</th>
+                <th>Data/Ora</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var b in Model.Items)
+            {
+                <tr>
+                    <td>@b.Patient?.Name</td>
+                    <td>@b.Doctor?.Name</td>
+                    <td>@b.Specialization?.Name</td>
+                    <td>@b.DateTime.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@b.Notes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,172 @@
+@page
+@model ClinicBooking.Web.Pages.Bookings.CreateModel
+@{
+    ViewData["Title"] = "Nuovo Appuntamento";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>@ViewData["Title"]</h1>
+            <hr />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <!-- Paziente -->
+                <div class="mb-3">
+                    <label asp-for="Booking.PatientId" class="form-label">
+                        Paziente <span class="text-danger">*</span>
+                    </label>
+                    <select asp-for="Booking.PatientId" class="form-select" asp-items="Model.PatientsSelectList">
+                        <option value="">-- Seleziona un paziente --</option>
+                    </select>
+                    <span asp-validation-for="Booking.PatientId" class="text-danger"></span>
+                </div>
+
+                <!-- Dottore -->
+                <div class="mb-3">
+                    <label asp-for="Booking.DoctorId" class="form-label">
+                        Dottore <span class="text-danger">*</span>
+                    </label>
+                    <select asp-for="Booking.DoctorId" class="form-select" asp-items="Model.DoctorsSelectList"
+                        id="doctorSelect">
+                        <option value="">-- Seleziona un dottore --</option>
+                    </select>
+                    <span asp-validation-for="Booking.DoctorId" class="text-danger"></span>
+                </div>
+
+                <!-- Specializzazione (filtrata dinamicamente in base al dottore selezionato) -->
+                <div class="mb-3">
+                    <label asp-for="Booking.SpecializationId" class="form-label">
+                        Specializzazione <span class="text-danger">*</span>
+                    </label>
+                    <select asp-for="Booking.SpecializationId" class="form-select" id="specializationSelect" disabled>
+                        <option value="">-- Prima seleziona un dottore --</option>
+                    </select>
+                    <span asp-validation-for="Booking.SpecializationId" class="text-danger"></span>
+                    <div class="form-text">
+                        Verranno mostrate solo le specializzazioni del dottore selezionato
+                    </div>
+                </div>
+
+                <!-- Data e Ora -->
+                <div class="mb-3">
+                    <label asp-for="Booking.DateTime" class="form-label">
+                        Data e Ora <span class="text-danger">*</span>
+                    </label>
+                    <input asp-for="Booking.DateTime" class="form-control" type="datetime-local"
+                        min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                    <span asp-validation-for="Booking.DateTime" class="text-danger"></span>
+                    <div class="form-text">
+                        Non è possibile selezionare date passate
+                    </div>
+                </div>
+
+                <!-- Note (opzionale) -->
+                <div class="mb-3">
+                    <label asp-for="Booking.Notes" class="form-label">Note</label>
+                    <textarea asp-for="Booking.Notes" class="form-control" rows="4"
+                        placeholder="Inserisci eventuali note sull'appuntamento (opzionale)"></textarea>
+                    <span asp-validation-for="Booking.Notes" class="text-danger"></span>
+                </div>
+
+                <!-- Pulsanti -->
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Crea Appuntamento
+                    </button>
+                    <a asp-page="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Annulla
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Colonna info (opzionale) -->
+        <div class="col-md-6">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-info-circle"></i> Informazioni
+                    </h5>
+                    <ul class="mb-0">
+                        <li>Seleziona prima il <strong>paziente</strong></li>
+                        <li>Poi scegli il <strong>dottore</strong></li>
+                        <li>Le <strong>specializzazioni</strong> verranno filtrate automaticamente in base al dottore
+                        </li>
+                        <li>La data proposta parte da oggi</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // JavaScript per il caricamento dinamico delle specializzazioni
+        document.addEventListener('DOMContentLoaded', function () {
+            const doctorSelect = document.getElementById('doctorSelect');
+            const specializationSelect = document.getElementById('specializationSelect');
+
+            // Event listener sul cambio del dottore
+            doctorSelect.addEventListener('change', async function () {
+                const doctorId = this.value;
+
+                // Reset dropdown specializzazioni
+                specializationSelect.innerHTML = '<option value="">-- Caricamento... --</option>';
+                specializationSelect.disabled = true;
+
+                // Se non è stato selezionato nessun dottore
+                if (!doctorId) {
+                    specializationSelect.innerHTML = '<option value="">-- Prima seleziona un dottore --</option>';
+                    return;
+                }
+
+                try {
+                    // Chiamata AJAX al PageHandler OnGetSpecializationsByDoctorAsync
+                    const response = await fetch(`?handler=SpecializationsByDoctor&doctorId=${doctorId}`);
+
+                    if (!response.ok) {
+                        throw new Error('Errore nel caricamento delle specializzazioni');
+                    }
+
+                    const specializations = await response.json();
+
+                    // Svuota il dropdown
+                    specializationSelect.innerHTML = '<option value="">-- Seleziona una specializzazione --</option>';
+
+                    // Popola con le specializzazioni del dottore
+                    if (specializations.length > 0) {
+                        specializations.forEach(spec => {
+                            const option = document.createElement('option');
+                            option.value = spec.id;
+                            option.textContent = spec.name;
+                            specializationSelect.appendChild(option);
+                        });
+
+                        specializationSelect.disabled = false;
+                    } else {
+                        specializationSelect.innerHTML = '<option value="">Questo dottore non ha specializzazioni</option>';
+                    }
+
+                } catch (error) {
+                    console.error('Errore nel caricamento delle specializzazioni:', error);
+                    specializationSelect.innerHTML = '<option value="">Errore nel caricamento</option>';
+
+                    // Mostra messaggio di errore all'utente (opzionale)
+                    alert('Si è verificato un errore nel caricamento delle specializzazioni. Riprova.');
+                }
+            });
+        });
+    </script>
+}
