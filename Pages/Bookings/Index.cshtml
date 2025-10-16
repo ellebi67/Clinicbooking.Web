@@ -1,5 +1,6 @@
 @page
 @model ClinicBooking.Web.Pages.Bookings.IndexModel
+@using ClinicBooking.Web.Models
 @{
     // Titolo pagina in italiano
     ViewData["Title"] = "Elenco Prenotazioni";
@@ -33,6 +34,7 @@ else
                 <th>Specializzazione</th>
                 <th>Data/Ora</th>
                 <th>Note</th>
+                <th>Stato</th>
                 <th>Azioni</th>
             </tr>
         </thead>
@@ -45,9 +47,36 @@ else
                     <td>@b.Specialization?.Name</td>
                     <td>@b.DateTime.ToString("dd/MM/yyyy HH:mm")</td>
                     <td>@b.Notes</td>
-                    <td class="text-end"> <!-- Nuova colonna con pulsanti allineati a destra -->
-                        <a class="btn btn-sm btn-outline-primary" asp-page="Edit" asp-route-id="@b.BookingId">Modifica</a>
-                        <a class="btn btn-sm btn-outline-danger" asp-page="Delete" asp-route-id="@b.BookingId">Elimina</a>
+                    <td>
+                        @switch (b.Status) // Visualizza stato con badge colorato per chiarezza
+                        {
+                            case BookingStatus.Scheduled:
+                                <span class="badge bg-secondary">Programmata</span>
+                                break;
+                            case BookingStatus.Confirmed:
+                                <span class="badge bg-primary">Confermata</span>
+                                break;
+                            case BookingStatus.Completed:
+                                <span class="badge bg-success">Eseguita</span>
+                                break;
+                            case BookingStatus.Cancelled:
+                                <span class="badge bg-danger">Annullata</span>
+                                break;
+                        }
+                    </td>
+                    <td class="text-end">
+                        @if (b.Status == BookingStatus.Scheduled) // Solo prenotazioni "Programmata" possono essere modificate o
+                                                                 // eliminate
+                        {
+                            <a class="btn btn-sm btn-outline-primary" asp-page="Edit" asp-route-id="@b.BookingId">Modifica</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-page="Delete" asp-route-id="@b.BookingId">Elimina</a>
+                        }
+                        else
+                        {
+                            <!-- Pulsanti disabilitati per stati diversi da Programmata -->
+                            <span class="btn btn-sm btn-secondary disabled">Modifica</span>
+                            <span class="btn btn-sm btn-secondary disabled">Elimina</span>
+                        }
                     </td>
                 </tr>
             }

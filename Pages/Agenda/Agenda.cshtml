@@ -1,36 +1,86 @@
 @page
-@model ClinicBooking.Web.Pages.Bookings.AgendaModel
+@model ClinicBooking.Web.Pages.Agenda.AgendaModel
+@using ClinicBooking.Web.Models
 @{
     ViewData["Title"] = "Agenda Prenotazioni";
 }
 <h1 class="mb-3">Agenda Prenotazioni</h1>
-@if (TempData["Message"] is string m){<div class="alert alert-info">@m</div>}
+@if (TempData["Message"] is string m)
+{
+    <div class="alert alert-info">@m</div>
+}
 <form method="get" class="row g-3 mb-4">
-<div class="col-md-3"><label class="form-label">Data</label><input asp-for="Date" type="date" class="form-control" /></div>
-<div class="col-md-3"><label class="form-label">Dottore</label><select asp-for="DoctorId" class="form-select" asp-items="Model.Doctors"><option value="">Tutti</option></select></div>
-<div class="col-md-3"><label class="form-label">Specializzazione</label><select asp-for="SpecializationId" class="form-select" asp-items="Model.Specializations"><option value="">Tutte</option></select></div>
-<div class="col-md-3 align-self-end"><button class="btn btn-primary" type="submit">Filtra</button><a class="btn btn-secondary" asp-page="Agenda">Pulisci</a></div>
+    <div class="col-md-3"><label class="form-label">Data</label><input asp-for="Date" type="date"
+            class="form-control" /></div>
+    <div class="col-md-3"><label class="form-label">Dottore</label><select asp-for="DoctorId" class="form-select"
+            asp-items="Model.Doctors">
+            <option value="">Tutti</option>
+        </select></div>
+    <div class="col-md-3"><label class="form-label">Specializzazione</label><select asp-for="SpecializationId"
+            class="form-select" asp-items="Model.Specializations">
+            <option value="">Tutte</option>
+        </select></div>
+    <div class="col-md-3 align-self-end"><button class="btn btn-primary" type="submit">Filtra</button><a
+            class="btn btn-secondary" asp-page="Agenda">Pulisci</a></div>
 </form>
 <form method="post" asp-page-handler="BulkConfirm" class="mb-3">
-<input type="hidden" name="date" value="@Model.Date" />
-<input type="hidden" name="doctorId" value="@Model.DoctorId" />
-<input type="hidden" name="specializationId" value="@Model.SpecializationId" />
-<button type="submit" class="btn btn-success">Conferma tutti</button>
+    <input type="hidden" name="date" value="@Model.Date" />
+    <input type="hidden" name="doctorId" value="@Model.DoctorId" />
+    <input type="hidden" name="specializationId" value="@Model.SpecializationId" />
+    <button type="submit" class="btn btn-success">Conferma tutti</button>
 </form>
-@if (Model.Items.Count == 0){<p>Nessuna prenotazione trovata per i filtri selezionati.</p>} else {
-<table class="table table-striped align-middle"><thead><tr><th>Ora</th><th>Paziente</th><th>Dottore</th><th>Specializzazione</th><th>Stato</th><th>Azioni</th></tr></thead>
-<tbody>
-@foreach (var b in Model.Items){<tr>
-<td>@b.BookingTime.ToString("HH\\:mm")</td>
-<td>@b.Patient?.Name</td>
-<td>@b.Doctor?.Name</td>
-<td>@b.Specialization?.Name</td>
-<td>@await Html.PartialAsync("/Pages/Partials/_StatusBadge.cshtml", b)</td>
-<td><form method="post" asp-page-handler="UpdateStatus" class="d-inline">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@b.BookingId" /><input type="hidden" name="rowVersionBase64" value="@(b.RowVersion != null ? Convert.ToBase64String(b.RowVersion) : string.Empty)" /><input type="hidden" name="date" value="@Model.Date" /><input type="hidden" name="doctorId" value="@Model.DoctorId" /><input type="hidden" name="specializationId" value="@Model.SpecializationId" />
-<button name="status" value="Confirmed" class="btn btn-outline-success btn-sm">Conferma</button>
-<button name="status" value="Completed" class="btn btn-outline-info btn-sm">Eseguita</button>
-<button name="status" value="Cancelled" class="btn btn-outline-danger btn-sm">Annulla</button>
-</form></td>
-</tr>}
-</tbody></table>
+@if (Model.Items.Count == 0)
+{
+    <p>Nessuna prenotazione trovata per i filtri selezionati.</p>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Ora</th>
+                <th>Paziente</th>
+                <th>Dottore</th>
+                <th>Specializzazione</th>
+                <th>Stato</th>
+                <th>Azioni</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var b in Model.Items)
+            {
+                <tr>
+                    <td>@b.BookingTime.ToString("HH\\:mm")</td>
+                    <td>@b.Patient?.Name</td>
+                    <td>@b.Doctor?.Name</td>
+                    <td>@b.Specialization?.Name</td>
+                    <td>@await Html.PartialAsync("/Pages/Partials/_StatusBadge.cshtml", b)</td>
+                    <td>
+                        <form method="post" asp-page-handler="UpdateStatus" class="d-inline">@Html.AntiForgeryToken()<input
+                                type="hidden" name="id" value="@b.BookingId" /><input type="hidden" name="rowVersionBase64"
+                                value="@(b.RowVersion != null ? Convert.ToBase64String(b.RowVersion) : string.Empty)" /><input
+                                type="hidden" name="date" value="@Model.Date" /><input type="hidden" name="doctorId"
+                                value="@Model.DoctorId" /><input type="hidden" name="specializationId"
+                                value="@Model.SpecializationId" />
+                            @* Logica condizionale per transizioni di stato valide *@
+@if(b.Status == BookingStatus.Scheduled) // Da Programmata
+{
+    <button name="status" value="Confirmed" class="btn btn-outline-success btn-sm">Conferma</button>
+    <button name="status" value="Cancelled" class="btn btn-outline-danger btn-sm">Annulla</button>
+}
+else if(b.Status == BookingStatus.Confirmed) // Da Confermata
+{
+    <button name="status" value="Completed" class="btn btn-outline-info btn-sm">Eseguita</button>
+    <button name="status" value="Cancelled" class="btn btn-outline-danger btn-sm">Annulla</button>
+}
+else // Eseguita o Annullata = stati finali
+{
+    <span class="text-muted small">Stato finale</span>
+}
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
