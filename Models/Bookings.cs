@@ -31,21 +31,21 @@ namespace ClinicBooking.Web.Models
         public int BookingId { get; set; }
 
         // Riferimento al paziente (FK verso tabella Patients)
-        [Required] // Obbligatorio: in UI daremo un messaggio chiaro
+        [Required, Range(1, int.MaxValue, ErrorMessage = "Seleziona un paziente valido.")] // Obbligatorio: in UI daremo un messaggio chiaro
         public int PatientId { get; set; }
 
         // Navigazione opzionale verso Patient (caricata quando serve)
         public Patient? Patient { get; set; }
 
         // Riferimento al dottore (FK verso tabella Doctors)
-        [Required]
+        [Required, Range(1, int.MaxValue, ErrorMessage = "Seleziona un dottore valido.")]
         public int DoctorId { get; set; }
 
         // Navigazione verso Doctor
         public Doctor? Doctor { get; set; }
 
         // Riferimento alla specializzazione (FK verso tabella Specializations)
-        [Required]
+        [Required, Range(1, int.MaxValue, ErrorMessage = "Seleziona una specializzazione valida.")]
         public int SpecializationId { get; set; }
 
         // Navigazione verso Specialization

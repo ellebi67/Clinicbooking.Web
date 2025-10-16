@@ -65,7 +65,7 @@
                         Data e Ora <span class="text-danger">*</span>
                     </label>
                     <input asp-for="Booking.DateTime" class="form-control" type="datetime-local"
-                        min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                        min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" step="1800" />
                     <span asp-validation-for="Booking.DateTime" class="text-danger"></span>
                     <div class="form-text">
                         Non è possibile selezionare date passate

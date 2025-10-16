@@ -92,11 +92,47 @@ public class EditModel : PageModel
         bookingToUpdate.DoctorId = Booking.DoctorId;
         bookingToUpdate.SpecializationId = Booking.SpecializationId;
         bookingToUpdate.DateTime = Booking.DateTime;
+        bookingToUpdate.DurationMinutes = Booking.DurationMinutes;
         bookingToUpdate.Notes = Booking.Notes;
+
+        // ➕ PATCH A: aggiorno i campi per la vista Agenda in base al nuovo DateTime
+        bookingToUpdate.BookingDate = DateOnly.FromDateTime(bookingToUpdate.DateTime);
+        bookingToUpdate.BookingTime = TimeOnly.FromDateTime(bookingToUpdate.DateTime);
+
+        // ➕ Vincolo slot 30' (minuti 00 o 30)
+        var minuti = bookingToUpdate.BookingTime.Minute;
+        if (minuti != 0 && minuti != 30)
+        {
+            ModelState.AddModelError("Booking.BookingTime", "Usare slot da 30 minuti (es. 10:00, 10:30).");
+            await LoadSelectListsAsync();
+            await LoadSpecializationsForDoctorAsync(bookingToUpdate.DoctorId);
+            return Page();
+        }
+
+
 
         // Imposta RowVersion originale per controllo concorrenza
         _context.Entry(bookingToUpdate).Property(b => b.RowVersion)
             .OriginalValue = Booking.RowVersion!;
+
+
+        // ➕ PATCH B: controllo sovrapposizione con altri appuntamenti dello stesso dottore
+        var start = bookingToUpdate.DateTime;
+        var end = start.AddMinutes(bookingToUpdate.DurationMinutes);
+
+        bool overlaps = await _context.Bookings.AnyAsync(b =>
+            b.DoctorId == bookingToUpdate.DoctorId &&
+            b.BookingId != bookingToUpdate.BookingId &&   // escludi se stesso
+            b.DateTime < end &&
+            start < b.DateTime.AddMinutes(b.DurationMinutes));
+
+        if (overlaps)
+        {
+            ModelState.AddModelError("Booking.DateTime", "Conflitto: il dottore ha già un appuntamento in questo intervallo.");
+            await LoadSelectListsAsync();
+            await LoadSpecializationsForDoctorAsync(bookingToUpdate.DoctorId);
+            return Page();
+        }
 
         try
         {

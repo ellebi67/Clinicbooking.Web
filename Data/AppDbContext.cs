@@ -50,7 +50,7 @@ public class AppDbContext : DbContext
       eb.Property(b => b.Status)
     .HasConversion<string>()
     .HasMaxLength(20)
-    .HasDefaultValue(BookingStatus.Scheduled);
+    .HasDefaultValue(BookingStatus.Scheduled); // ✅ enum CLR; il converter lo salva come 'Scheduled'
 
       // Durata in minuti, default 30
       eb.Property(b => b.DurationMinutes)
@@ -170,7 +170,33 @@ public class AppDbContext : DbContext
       eb.Ignore("PatientId1");
     });
 
-
-
   }
+
+  // ➕ Protezione centrale: sincronizza sempre i campi Agenda prima del salvataggio
+  public override int SaveChanges()
+  {
+    SyncBookingFields();
+    return base.SaveChanges();
+  }
+
+  public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+  {
+    SyncBookingFields();
+    return await base.SaveChangesAsync(cancellationToken);
+  }
+
+  private void SyncBookingFields()
+  {
+    foreach (var entry in ChangeTracker.Entries<Booking>())
+    {
+      if (entry.State == EntityState.Added || entry.State == EntityState.Modified)
+      {
+        var dt = entry.Entity.DateTime;
+        entry.Entity.BookingDate = DateOnly.FromDateTime(dt); // solo data
+        entry.Entity.BookingTime = TimeOnly.FromDateTime(dt); // solo ora
+      }
+    }
+  }
+
+
 }
