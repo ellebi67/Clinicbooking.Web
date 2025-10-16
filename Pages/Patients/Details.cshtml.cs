@@ -1,5 +1,5 @@
 // Namespace coerente con il progetto
-namespace ClinicBooking.Web.Pages.Pazienti;
+namespace ClinicBooking.Web.Pages.Patients;
 
 using System.ComponentModel.DataAnnotations;                 // Attributi di validazione
 using ClinicBooking.Web.Data;                                // AppDbContext

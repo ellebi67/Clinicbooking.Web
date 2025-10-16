@@ -23,7 +23,7 @@
                         Paziente <span class="text-danger">*</span>
                     </label>
                     <select asp-for="Booking.PatientId" class="form-select" asp-items="Model.PatientsSelectList">
-                        <option value="">-- Seleziona un paziente --</option>
+                        <option value="0">-- Seleziona un paziente --</option>
                     </select>
                     <span asp-validation-for="Booking.PatientId" class="text-danger"></span>
                 </div>
@@ -35,7 +35,7 @@
                     </label>
                     <select asp-for="Booking.DoctorId" class="form-select" asp-items="Model.DoctorsSelectList"
                         id="doctorSelect">
-                        <option value="">-- Seleziona un dottore --</option>
+                        <option value="0">-- Seleziona un dottore --</option>
                     </select>
                     <span asp-validation-for="Booking.DoctorId" class="text-danger"></span>
                 </div>
@@ -45,8 +45,9 @@
                     <label asp-for="Booking.SpecializationId" class="form-label">
                         Specializzazione <span class="text-danger">*</span>
                     </label>
-                    <select asp-for="Booking.SpecializationId" class="form-select" id="specializationSelect" disabled>
-                        <option value="">-- Prima seleziona un dottore --</option>
+                    <select asp-for="Booking.SpecializationId" class="form-select" id="specializationSelect"
+                        disabled="@(Model.Booking?.DoctorId > 0 ? null : "disabled")">
+                        <option value="0">-- Prima seleziona un dottore --</option>
                     </select>
                     <span asp-validation-for="Booking.SpecializationId" class="text-danger"></span>
                     <div class="form-text">
@@ -60,7 +61,7 @@
                         Data e Ora <span class="text-danger">*</span>
                     </label>
                     <input asp-for="Booking.DateTime" class="form-control" type="datetime-local"
-                        min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                        min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" step="1800" />
                     <span asp-validation-for="Booking.DateTime" class="text-danger"></span>
                     <div class="form-text">
                         Non è possibile selezionare date passate
@@ -115,58 +116,69 @@
     <script>
         // JavaScript per il caricamento dinamico delle specializzazioni
         document.addEventListener('DOMContentLoaded', function () {
-            const doctorSelect = document.getElementById('doctorSelect');
-            const specializationSelect = document.getElementById('specializationSelect');
+            console.log('Script caricato'); // Verifica che lo script parta
+            const doctorSelect = document.getElementById('doctorSelect'); // ID corretto del dropdown dottore
+            const specializationSelect = document.getElementById('specializationSelect'); // ID corretto del dropdown specializzazioni
+
+            console.log('doctorSelect:', doctorSelect); // Verifica se trova l'elemento
+            console.log('specializationSelect:', specializationSelect); // Verifica se trova l'elemento
+
+            // Se uno dei due è null, stampa tutti gli ID disponibili
+            if (!doctorSelect || !specializationSelect) {
+                console.log('ID disponibili nella pagina:');
+                document.querySelectorAll('select').forEach(select => {
+                    console.log('Select trovata:', select.id, select.name);
+                });
+                return; // Ferma l'esecuzione se non trova gli elementi
+            }
 
             // Event listener sul cambio del dottore
             doctorSelect.addEventListener('change', async function () {
-                const doctorId = this.value;
+                const doctorId = this.value; // Ottiene il valore del dottore selezionato
 
-                // Reset dropdown specializzazioni
-                specializationSelect.innerHTML = '<option value="">-- Caricamento... --</option>';
-                specializationSelect.disabled = true;
+                // Reset dropdown specializzazioni con messaggio di caricamento
+                specializationSelect.innerHTML = '<option value="0">-- Caricamento... --</option>';
+                specializationSelect.disabled = true; // Disabilita durante il caricamento
 
                 // Se non è stato selezionato nessun dottore
-                if (!doctorId) {
-                    specializationSelect.innerHTML = '<option value="">-- Prima seleziona un dottore --</option>';
+                if (!doctorId || doctorId === "0") {
+                    specializationSelect.innerHTML = '<option value="0">-- Prima seleziona un dottore --</option>';
                     return;
                 }
 
                 try {
-                    // Chiamata AJAX al PageHandler OnGetSpecializationsByDoctorAsync
+                    // Chiamata AJAX al PageHandler per ottenere specializzazioni del dottore
                     const response = await fetch(`?handler=SpecializationsByDoctor&doctorId=${doctorId}`);
 
                     if (!response.ok) {
                         throw new Error('Errore nel caricamento delle specializzazioni');
                     }
 
-                    const specializations = await response.json();
+                    const specializations = await response.json(); // Converte risposta in JSON
 
-                    // Svuota il dropdown
-                    specializationSelect.innerHTML = '<option value="">-- Seleziona una specializzazione --</option>';
+                    // Svuota il dropdown e aggiungi opzione predefinita
+                    specializationSelect.innerHTML = '<option value="0">-- Seleziona una specializzazione --</option>';
 
                     // Popola con le specializzazioni del dottore
                     if (specializations.length > 0) {
                         specializations.forEach(spec => {
-                            const option = document.createElement('option');
-                            option.value = spec.id;
-                            option.textContent = spec.name;
-                            specializationSelect.appendChild(option);
+                            const option = document.createElement('option'); // Crea elemento option
+                            option.value = spec.id; // Imposta valore ID specializzazione
+                            option.textContent = spec.name; // Imposta testo visualizzato
+                            specializationSelect.appendChild(option); // Aggiunge al dropdown
                         });
-
-                        specializationSelect.disabled = false;
+                        specializationSelect.disabled = false; // Riabilita il dropdown
                     } else {
-                        specializationSelect.innerHTML = '<option value="">Questo dottore non ha specializzazioni</option>';
+                        specializationSelect.innerHTML = '<option value="0">Questo dottore non ha specializzazioni</option>';
                     }
 
                 } catch (error) {
                     console.error('Errore nel caricamento delle specializzazioni:', error);
-                    specializationSelect.innerHTML = '<option value="">Errore nel caricamento</option>';
-
-                    // Mostra messaggio di errore all'utente (opzionale)
+                    specializationSelect.innerHTML = '<option value="0">Errore nel caricamento</option>';
                     alert('Si è verificato un errore nel caricamento delle specializzazioni. Riprova.');
                 }
             });
         });
     </script>
+
 }

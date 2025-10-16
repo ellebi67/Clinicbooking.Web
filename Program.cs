@@ -28,8 +28,11 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapStaticAssets();
-app.MapRazorPages()
-   .WithStaticAssets();
+//app.MapStaticAssets();
+//app.MapRazorPages()
+//   .WithStaticAssets();
+
+app.UseStaticFiles(); // Versione .NET 8 per i file statici
+app.MapRazorPages();  // Senza WithStaticAssets che non esiste in .NET 8
 
 app.Run();

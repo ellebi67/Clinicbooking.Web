@@ -22,6 +22,7 @@ public class CreateModel : PageModel
     // SelectList per i dropdown
     public SelectList PatientsSelectList { get; set; } = default!;
     public SelectList DoctorsSelectList { get; set; } = default!;
+    public SelectList SpecializationsSelectList { get; set; } = default!;
 
     public async Task<IActionResult> OnGetAsync()
     {
@@ -33,6 +34,11 @@ public class CreateModel : PageModel
 
         await LoadSelectListsAsync();
 
+        if (Booking.DoctorId > 0)
+        {
+            await LoadSpecializationsForDoctorAsync(Booking.DoctorId);
+        }
+
         return Page();
     }
 
@@ -41,23 +47,54 @@ public class CreateModel : PageModel
         if (!ModelState.IsValid)
         {
             await LoadSelectListsAsync();
+            await LoadSpecializationsForDoctorAsync(Booking.DoctorId);
             return Page();
         }
-        // ➕ Calcolo automatico dei campi calendario per la vista Agenda
-        Booking.BookingDate = DateOnly.FromDateTime(Booking.DateTime);  // solo data (per filtri Agenda)
-        Booking.BookingTime = TimeOnly.FromDateTime(Booking.DateTime);  // solo ora  (per ordinamenti/slot)
 
-        // (opzionale) vincolo slot 30'
-        // ➕ Controllo slot 30 minuti
+        // Validazione lato server: NON NEL PASSATO
+        var now = DateTime.Now;
+        if (Booking.DateTime < now)
+        {
+            ModelState.AddModelError("Booking.DateTime", "Seleziona una data/ora futura (non nel passato).");
+            await LoadSelectListsAsync();
+            await LoadSpecializationsForDoctorAsync(Booking.DoctorId);
+            return Page();
+        }
+
+        // Calcolo automatico dei campi calendario per la vista Agenda
+        Booking.BookingDate = DateOnly.FromDateTime(Booking.DateTime);
+        Booking.BookingTime = TimeOnly.FromDateTime(Booking.DateTime);
+
+        // Controllo slot 30 minuti
         var minutes = Booking.BookingTime.Minute;
         if (minutes != 0 && minutes != 30)
         {
             ModelState.AddModelError("Booking.BookingTime", "Usare slot da 30 minuti (es. 10:00, 10:30).");
-            // Ricarica il form con l’errore
-            await LoadSelectListsAsync();   // ✅ usa il tuo helper
+            await LoadSelectListsAsync();
+            await LoadSpecializationsForDoctorAsync(Booking.DoctorId);
             return Page();
         }
 
+        // Controllo sovrapposizioni
+        var start = Booking.DateTime;
+        var end = start.AddMinutes(Booking.DurationMinutes);
+
+        // Verifica se esiste un'altra prenotazione con lo stesso dottore
+        // che si sovrappone al nuovo intervallo (start–end)
+        bool overlap = await _context.Bookings.AnyAsync(b =>
+            b.DoctorId == Booking.DoctorId &&     // stesso dottore
+            b.DateTime < end &&                    // inizia prima della fine
+            start < b.DateTime.AddMinutes(b.DurationMinutes)); // ma finisce dopo l'inizio
+
+        if (overlap)
+        {
+            ModelState.AddModelError("Booking.DateTime", "Conflitto: il dottore ha già un appuntamento in questo intervallo.");
+            await LoadSelectListsAsync();
+            await LoadSpecializationsForDoctorAsync(Booking.DoctorId);
+            return Page();
+        }
+
+        // Se tutto ok, salva la prenotazione
         _context.Bookings.Add(Booking);
         await _context.SaveChangesAsync();
 
@@ -105,7 +142,7 @@ public class CreateModel : PageModel
             patients,
             "PatientId",
             "Name",
-            null  // Nessuna selezione di default
+            Booking?.PatientId > 0 ? Booking.PatientId : null
         );
 
         // Dottori: carica tutti i dottori ordinati per nome
@@ -122,7 +159,7 @@ public class CreateModel : PageModel
             doctors,
             "DoctorId",
             "DisplayName",
-            null  // Nessuna selezione di default
+            Booking?.DoctorId > 0 ? Booking.DoctorId : null
         );
     }
 
@@ -141,5 +178,25 @@ public class CreateModel : PageModel
         }
 
         return rounded;
+    }
+
+    /// <summary>
+    /// Helper: costruisce la SelectList delle specializzazioni per un dato dottore
+    /// </summary>
+    private async Task LoadSpecializationsForDoctorAsync(int doctorId)
+    {
+        var specializations = await _context.DoctorSpecializations
+            .Where(ds => ds.DoctorId == doctorId)
+            .Include(ds => ds.Specialization)
+            .Select(ds => new { ds.SpecializationId, ds.Specialization.Name })
+            .OrderBy(s => s.Name)
+            .ToListAsync();
+
+        SpecializationsSelectList = new SelectList(
+            specializations,
+            "SpecializationId",
+            "Name",
+            Booking.SpecializationId
+        );
     }
 }

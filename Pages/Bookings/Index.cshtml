@@ -33,6 +33,7 @@ else
                 <th>Specializzazione</th>
                 <th>Data/Ora</th>
                 <th>Note</th>
+                <th>Azioni</th>
             </tr>
         </thead>
         <tbody>
@@ -44,6 +45,10 @@ else
                     <td>@b.Specialization?.Name</td>
                     <td>@b.DateTime.ToString("dd/MM/yyyy HH:mm")</td>
                     <td>@b.Notes</td>
+                    <td class="text-end"> <!-- Nuova colonna con pulsanti allineati a destra -->
+                        <a class="btn btn-sm btn-outline-primary" asp-page="Edit" asp-route-id="@b.BookingId">Modifica</a>
+                        <a class="btn btn-sm btn-outline-danger" asp-page="Delete" asp-route-id="@b.BookingId">Elimina</a>
+                    </td>
                 </tr>
             }
         </tbody>
