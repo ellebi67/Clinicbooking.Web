@@ -181,7 +181,7 @@ public class EditModel : PageModel
             .Select(ds => new
             {
                 id = ds.SpecializationId,
-                name = ds.Specialization.Name
+                name = ds.Specialization!.Name
             })
             .OrderBy(s => s.name)
             .ToListAsync();
@@ -226,7 +226,7 @@ public class EditModel : PageModel
             .Select(ds => new
             {
                 ds.SpecializationId,
-                ds.Specialization.Name
+                ds.Specialization!.Name
             })
             .OrderBy(s => s.Name)
             .ToListAsync();
@@ -235,7 +235,7 @@ public class EditModel : PageModel
             specializations,
             "SpecializationId",
             "Name",
-            Booking.SpecializationId
+            Booking?.SpecializationId ?? 0
         );
     }
 }

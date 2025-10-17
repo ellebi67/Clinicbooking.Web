@@ -3,6 +3,7 @@ using ClinicBooking.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace ClinicBooking.Web.Pages.Doctors;
 
@@ -10,7 +11,18 @@ namespace ClinicBooking.Web.Pages.Doctors;
 public class EditModel : PageModel
 {
     private readonly AppDbContext _db;
-    public EditModel(AppDbContext db) => _db = db;
+
+    private readonly UserManager<IdentityUser> _userManager;
+
+    //public EditModel(AppDbContext db) => _db = db;
+
+    public EditModel(AppDbContext db, UserManager<IdentityUser> userManager)
+    {
+        _db = db;
+        _userManager = userManager;
+    }
+
+
 
     [BindProperty] public DoctorFormVM Input { get; set; } = new();
 
@@ -65,6 +77,10 @@ public class EditModel : PageModel
 
         if (doc is null) return NotFound();
 
+        // Memorizza l'email precedente per aggiornare IdentityUser
+        string oldEmail = doc.Email ?? "";
+
+
         // Aggiorna campi base
         doc.Name = Input.Name;
         doc.Email = Input.Email;
@@ -94,7 +110,45 @@ public class EditModel : PageModel
             });
         }
 
+        // Se l'email è cambiata, aggiorna anche l'IdentityUser corrispondente
+        if (!string.IsNullOrEmpty(oldEmail) && oldEmail != Input.Email)
+        {
+            await UpdateIdentityUserEmailAsync(oldEmail, Input.Email ?? "");
+        }
+
         await _db.SaveChangesAsync();
         return RedirectToPage("Index");
     }
+
+
+    /// <summary>
+    /// Aggiorna email dell'IdentityUser quando cambia email del Doctor
+    /// </summary>
+    private async Task UpdateIdentityUserEmailAsync(string oldEmail, string newEmail)
+    {
+        // Trova l'utente con la vecchia email
+        var user = await _userManager.FindByEmailAsync(oldEmail);
+
+        if (user != null && !string.IsNullOrEmpty(newEmail))
+        {
+            // Aggiorna email e username (che di solito coincide con email)
+            user.Email = newEmail;
+            user.UserName = newEmail;
+            user.NormalizedEmail = newEmail.ToUpper();
+            user.NormalizedUserName = newEmail.ToUpper();
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded)
+            {
+                Console.WriteLine($"✅ Email IdentityUser aggiornata: {oldEmail} → {newEmail}");
+            }
+            else
+            {
+                Console.WriteLine($"❌ Errore aggiornamento IdentityUser: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+            }
+        }
+    }
+
+
 }

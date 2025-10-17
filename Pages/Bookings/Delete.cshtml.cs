@@ -62,7 +62,7 @@ public class DeleteModel : PageModel
             TempData["Message"] = "Appuntamento eliminato con successo.";
             return RedirectToPage("./Index");
         }
-        catch (DbUpdateException ex)
+        catch (DbUpdateException)
         {
             // Log dell'errore (se hai un sistema di logging)
             // _logger.LogError(ex, "Errore durante l'eliminazione dell'appuntamento {BookingId}", id);

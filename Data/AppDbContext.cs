@@ -1,11 +1,13 @@
 using ClinicBooking.Web.Models;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Identity;                     // Per IdentityUser
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore; // Per IdentityDbContext
 namespace ClinicBooking.Web.Data;
 
 
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<IdentityUser>
+//AppDbContext : DbContext
 {
   public AppDbContext(DbContextOptions<AppDbContext> opts) : base(opts) { }
 

@@ -114,7 +114,7 @@ public class CreateModel : PageModel
             .Select(ds => new
             {
                 id = ds.SpecializationId,
-                name = ds.Specialization.Name
+                name = ds.Specialization!.Name
             })
             .OrderBy(s => s.name)
             .ToListAsync();
@@ -188,7 +188,7 @@ public class CreateModel : PageModel
         var specializations = await _context.DoctorSpecializations
             .Where(ds => ds.DoctorId == doctorId)
             .Include(ds => ds.Specialization)
-            .Select(ds => new { ds.SpecializationId, ds.Specialization.Name })
+            .Select(ds => new { ds.SpecializationId, ds.Specialization!.Name })
             .OrderBy(s => s.Name)
             .ToListAsync();
 
@@ -196,7 +196,7 @@ public class CreateModel : PageModel
             specializations,
             "SpecializationId",
             "Name",
-            Booking.SpecializationId
+            Booking?.SpecializationId ?? 0
         );
     }
 }

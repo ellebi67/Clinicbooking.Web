@@ -1,0 +1,215 @@
+@page
+@model ClinicBooking.Web.Pages.Bookings.DoctorAgendaModel
+@using ClinicBooking.Web.Models
+@{
+    ViewData["Title"] = "La mia Agenda";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1>La mia Agenda</h1>
+            <p class="text-muted">Dott. @Model.DoctorName</p>
+        </div>
+    </div>
+
+    <!-- Navigazione date -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <form method="get" class="row align-items-center">
+                        <div class="col-md-4">
+                            <label class="form-label">Seleziona data:</label>
+                            <input asp-for="SelectedDate" type="date" class="form-control" onchange="this.form.submit()" />
+                        </div>
+                        <div class="col-md-8">
+                            <!-- Navigazione rapida -->
+                            <div class="btn-group" role="group">
+                                <a class="btn btn-outline-secondary" 
+                                   asp-page="Agenda" 
+                                   asp-route-selectedDate="@Model.Today.AddDays(-1).ToString("yyyy-MM-dd")">
+                                   Ieri
+                                </a>
+                                <a class="btn @(Model.SelectedDate == Model.Today ? "btn-primary" : "btn-outline-primary")" 
+                                   asp-page="Agenda" 
+                                   asp-route-selectedDate="@Model.Today.ToString("yyyy-MM-dd")">
+                                   Oggi
+                                </a>
+                                <a class="btn btn-outline-secondary" 
+                                   asp-page="Agenda" 
+                                   asp-route-selectedDate="@Model.Today.AddDays(1).ToString("yyyy-MM-dd")">
+                                   Domani
+                                </a>
+                                <a class="btn btn-outline-secondary" 
+                                   asp-page="Agenda" 
+                                   asp-route-selectedDate="@Model.Today.AddDays(7).ToString("yyyy-MM-dd")">
+                                   +7 giorni
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messaggi feedback -->
+    @if (TempData["Message"] is string msg)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @msg
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] is string error)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @error
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Header data selezionata -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <h3>
+                @Model.SelectedDate.ToString("dddd, dd MMMM yyyy")
+                @if (Model.SelectedDate == Model.Today)
+                {
+                    <span class="badge bg-primary ms-2">Oggi</span>
+                }
+                else if (Model.SelectedDate < Model.Today)
+                {
+                    <span class="badge bg-secondary ms-2">Passato</span>
+                }
+                else
+                {
+                    <span class="badge bg-info ms-2">Futuro</span>
+                }
+            </h3>
+        </div>
+    </div>
+
+    <!-- Lista appuntamenti -->
+    @if (Model.DayAppointments.Count == 0)
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <h5>Nessun appuntamento</h5>
+                    <p>Non hai appuntamenti programmati per questa data.</p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-striped">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Ora</th>
+                            <th>Paziente</th>
+                            <th>Specializzazione</th>
+                            <th>Note</th>
+                            <th>Stato</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var booking in Model.DayAppointments)
+                        {
+                            <tr class="@(booking.BookingTime <= TimeOnly.FromDateTime(DateTime.Now) && Model.SelectedDate == Model.Today ? "table-warning" : "")">
+                                <td>
+                                    <strong>@booking.BookingTime.ToString("HH:mm")</strong>
+                                    @if (booking.BookingTime <= TimeOnly.FromDateTime(DateTime.Now) && Model.SelectedDate == Model.Today)
+                                    {
+                                        <br><small class="text-warning">In corso/Passato</small>
+                                    }
+                                </td>
+                                <td>
+                                    <i class="bi bi-person"></i> @booking.Patient?.Name
+                                    @if (!string.IsNullOrEmpty(booking.Patient?.Phone))
+                                    {
+                                        <br><small class="text-muted">@booking.Patient.Phone</small>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@booking.Specialization?.Name</span>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(booking.Notes))
+                                    {
+                                        <small>@booking.Notes</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    @switch(booking.Status)
+                                    {
+                                        case BookingStatus.Scheduled:
+                                            <span class="badge bg-secondary">Programmata</span>
+                                            break;
+                                        case BookingStatus.Confirmed:
+                                            <span class="badge bg-primary">Confermata</span>
+                                            break;
+                                        case BookingStatus.Completed:
+                                            <span class="badge bg-success">Eseguita</span>
+                                            break;
+                                        case BookingStatus.Cancelled:
+                                            <span class="badge bg-danger">Annullata</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    @if (Model.CanModifyDate(Model.SelectedDate))
+                                    {
+                                        <!-- Può modificare solo oggi e giorni passati -->
+                                        <form method="post" asp-page-handler="UpdateStatus" class="d-inline">
+                                            <input type="hidden" name="bookingId" value="@booking.BookingId" />
+                                            <input type="hidden" name="SelectedDate" value="@Model.SelectedDate" />
+                                            
+                                            @if (booking.Status == BookingStatus.Scheduled)
+                                            {
+                                                <button name="newStatus" value="Confirmed" class="btn btn-sm btn-outline-success me-1">
+                                                    Conferma
+                                                </button>
+                                                <button name="newStatus" value="Cancelled" class="btn btn-sm btn-outline-danger">
+                                                    Annulla
+                                                </button>
+                                            }
+                                            else if (booking.Status == BookingStatus.Confirmed)
+                                            {
+                                                <button name="newStatus" value="Completed" class="btn btn-sm btn-outline-info me-1">
+                                                    Eseguita
+                                                </button>
+                                                <button name="newStatus" value="Cancelled" class="btn btn-sm btn-outline-danger">
+                                                    Annulla
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">Completato</span>
+                                            }
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <!-- Appuntamenti futuri: solo visualizzazione -->
+                                        <span class="text-muted small">Solo lettura</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

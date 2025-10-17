@@ -23,22 +23,50 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Patients/Index">Pazienti</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Specializations/Index">Specializzazioni</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Doctors/Index">Dottori</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Bookings/Index">Appuntamenti</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Agenda/Agenda">Agenda</a>
-                        </li>
+
+                        <!-- Menu condizionale basato sui ruoli -->
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <!-- Solo Admin vede gestione utenti -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Admin/Users/Index">Gestione Utenti</a>
+                            </li>
+                        }
+                        else if (User.IsInRole("Secretary"))
+                        {
+
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Patients/Index">Pazienti</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Specializations/Index">Specializzazioni</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Doctors/Index">Dottori</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Bookings/Index">Appuntamenti</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Agenda/Agenda">Agenda</a>
+                            </li>
+
+                        }
+                        else if (User.IsInRole("Doctor"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Bookings/MyAppointments">Miei Appuntamenti di
+                                    oggi</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Bookings/DoctorAgenda">La mia Agenda</a>
+                            </li>
+                        }
+
+
                     </ul>
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>

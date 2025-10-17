@@ -4,10 +4,11 @@
     ViewData["Title"] = "Dottori";
 }
 <h2>Dottori</h2>
-
+<!--
 <p>
     <a class="btn btn-primary" asp-page="Create">Nuovo Dottore</a>
 </p>
+-->
 
 <table class="table table-striped">
     <thead>
@@ -29,7 +30,7 @@
                 <td>@r.Specs</td>
                 <td class="text-end">
                     <a class="btn btn-sm btn-outline-primary" asp-page="Edit" asp-route-id="@r.DoctorId">Modifica</a>
-                    <a class="btn btn-sm btn-outline-danger" asp-page="Delete" asp-route-id="@r.DoctorId">Elimina</a>
+                    <!--<a class="btn btn-sm btn-outline-danger" asp-page="Delete" asp-route-id="@r.DoctorId">Elimina</a>-->
                 </td>
             </tr>
         }
