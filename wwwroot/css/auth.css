@@ -1,0 +1,218 @@
+/* =====================================================
+   LAYOUT AUTENTICAZIONE - COLORI MEDICALI
+   Stile moderno centrato con card per Login/Logout
+   ===================================================== */
+
+/* Variabili CSS per i colori medicali */
+:root {
+    /* Colore primario: Verde acqua/Teal medicale */
+    --medical-primary: #00897b;
+
+    /* Colore primario più scuro (hover/focus) */
+    --medical-primary-dark: #00695c;
+
+    /* Colore secondario: Azzurro ospedale */
+    --medical-secondary: #0288d1;
+
+    /* Colore di sfondo: Grigio chiaro pulito */
+    --medical-bg: #f5f7fa;
+
+    /* Colore testo principale */
+    --medical-text: #2c3e50;
+
+    /* Colore bordi */
+    --medical-border: #e1e8ed;
+}
+
+/* Container principale che occupa tutta l'altezza dello schermo */
+.auth-container {
+    background: linear-gradient(135deg, #e0f7fa 0%, #f5f7fa 100%);
+    /* Sfumatura dal celeste chiaro al grigio */
+    min-height: 100vh;
+    /* 100% altezza viewport (finestra browser) */
+}
+
+/* Card centrale contenente il form */
+.auth-card {
+    background: white;
+    /* Sfondo bianco pulito tipo clinica */
+    border-radius: 12px;
+    /* Angoli arrotondati moderni */
+    box-shadow: 0 4px 20px rgba(0, 137, 123, 0.15);
+    /* Ombra con tinta verde medicale */
+    padding: 3rem;
+    /* Spaziatura interna generosa */
+    max-width: 450px;
+    /* Larghezza massima card */
+    width: 100%;
+    /* Larghezza completa fino al max */
+}
+
+/* Area per il logo (placeholder) */
+.auth-logo {
+    text-align: center;
+    /* Centra il contenuto */
+    margin-bottom: 2rem;
+    /* Spazio sotto il logo */
+}
+
+/* Testo del logo (temporaneo fino all'inserimento immagine) */
+.auth-logo h1 {
+    color: var(--medical-primary);
+    /* Verde medicale */
+    font-size: 2rem;
+    /* Dimensione grande */
+    font-weight: 600;
+    /* Grassetto medio */
+    margin: 0;
+}
+
+/* Icona medica accanto al logo */
+.auth-logo-icon {
+    font-size: 3rem;
+    /* Icona grande */
+    color: var(--medical-primary);
+    margin-bottom: 1rem;
+}
+
+/* Titolo pagina (es: "Accedi al Sistema") */
+.auth-title {
+    color: var(--medical-text);
+    font-size: 1.75rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+/* Sottotitolo/descrizione */
+.auth-subtitle {
+    color: #7f8c8d;
+    /* Grigio medio */
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+
+/* Stile per le label dei campi form */
+.auth-card label {
+    color: var(--medical-text);
+    font-weight: 500;
+    /* Medio grassetto */
+    margin-bottom: 0.5rem;
+}
+
+/* Stile per i campi input (email, password) */
+.auth-card .form-control {
+    border: 2px solid var(--medical-border);
+    /* Bordo grigio chiaro */
+    border-radius: 8px;
+    /* Angoli arrotondati */
+    padding: 0.75rem 1rem;
+    /* Spaziatura interna comoda */
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    /* Animazione fluida al focus */
+}
+
+/* Input quando riceve il focus (click dentro) */
+.auth-card .form-control:focus {
+    border-color: var(--medical-primary);
+    /* Bordo verde medicale */
+    box-shadow: 0 0 0 0.2rem rgba(0, 137, 123, 0.15);
+    /* Alone luminoso verde */
+    outline: none;
+    /* Rimuove outline browser default */
+}
+
+/* Checkbox "Ricordami" */
+.auth-card .form-check-input {
+    border-color: var(--medical-primary);
+}
+
+/* Checkbox quando selezionata */
+.auth-card .form-check-input:checked {
+    background-color: var(--medical-primary);
+    border-color: var(--medical-primary);
+}
+
+/* Pulsante principale (Login/Logout) */
+.btn-auth-primary {
+    background-color: var(--medical-primary);
+    /* Verde medicale */
+    border: none;
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    width: 100%;
+    /* Larghezza completa */
+    transition: all 0.3s ease;
+    /* Animazione hover */
+}
+
+/* Pulsante al passaggio mouse (hover) */
+.btn-auth-primary:hover {
+    background-color: var(--medical-primary-dark);
+    /* Verde più scuro */
+    transform: translateY(-2px);
+    /* Solleva leggermente il pulsante */
+    box-shadow: 0 4px 12px rgba(0, 137, 123, 0.3);
+    /* Ombra più marcata */
+}
+
+/* Pulsante quando premuto */
+.btn-auth-primary:active {
+    transform: translateY(0);
+    /* Ritorna in posizione */
+}
+
+/* Link testuali (es: "Password dimenticata?") */
+.auth-link {
+    color: var(--medical-secondary);
+    /* Azzurro */
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+/* Link al passaggio mouse */
+.auth-link:hover {
+    color: var(--medical-primary);
+    text-decoration: underline;
+}
+
+/* Messaggi di errore validazione */
+.text-danger {
+    color: #e74c3c !important;
+    /* Rosso per errori */
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Messaggio di successo (es: "Logout effettuato") */
+.alert-success {
+    background-color: #d4edda;
+    /* Verde chiaro */
+    border-color: #c3e6cb;
+    color: #155724;
+    /* Verde scuro */
+    border-radius: 8px;
+}
+
+/* Footer con copyright (opzionale) */
+.auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    color: #95a5a6;
+    font-size: 0.85rem;
+}
+
+/* Responsive: tablet e mobile */
+@media (max-width: 768px) {
+    .auth-card {
+        padding: 2rem 1.5rem;
+        /* Padding ridotto su mobile */
+        margin: 1rem;
+        /* Margini laterali */
+    }

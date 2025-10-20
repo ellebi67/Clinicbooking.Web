@@ -3,12 +3,15 @@ using ClinicBooking.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.HttpOverrides;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 //builder.Services.AddRazorPages();
 
 // Trova AddRazorPages() e sostituisci con:
+// ATTIVA Razor Pages e proteggi per default tutte le pagine (tranne Privacy)
 builder.Services.AddRazorPages(options =>
 {
     // Richiede autenticazione per TUTTE le pagine per default
@@ -39,6 +42,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 // Configura redirect automatico per pagine protette
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;   // cookie trasmesso solo su HTTPS
     options.LoginPath = "/Identity/Account/Login";        // Pagina di login
     options.LogoutPath = "/Identity/Account/Logout";      // Pagina di logout  
     options.AccessDeniedPath = "/Identity/Account/AccessDenied"; // Accesso negato
@@ -80,10 +84,9 @@ app.UseHttpsRedirection();
 
 // Pipeline di autenticazione - ORDINE IMPORTANTE
 app.UseAuthentication(); // Verifica chi è l'utente (identifica utente dal cookie/token)
-app.UseAuthorization();  // Verifica cosa può fare l'utente (controlla permessi)
+//app.UseAuthorization();  // Verifica cosa può fare l'utente (controlla permessi)
 
 app.UseRouting();
-
 app.UseAuthorization();
 
 //app.MapStaticAssets();

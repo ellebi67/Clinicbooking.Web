@@ -58,19 +58,34 @@
                             </td>
                             <td>
                                 <!-- Pulsanti azioni con logica condizionale -->
-                                <a class="btn btn-sm btn-outline-primary" asp-page="Edit"
-                                    asp-route-id="@user.Id">Modifica</a>
+                                <a class="btn btn-sm btn-outline-primary @(user.IsProtected ? "disabled pe-none" : "")"
+                                    asp-page="Edit" asp-route-id="@user.Id"
+                                    aria-disabled="@(user.IsProtected ? "true" : "false")"
+                                    tabindex="@(user.IsProtected ? "-1" : "0")"
+                                    title="@(user.IsProtected ? "Utente protetto: ruoli non modificabili" : "Modifica utente")">
+                                    Modifica
+                                </a>
 
                                 @if (user.IsActive)
-                                {
-                                    <a class="btn btn-sm btn-outline-warning" asp-page="Disable"
-                                        asp-route-id="@user.Id">Disabilita</a>
-                                }
-                                else
-                                {
-                                    <a class="btn btn-sm btn-outline-success" asp-page="Enable"
-                                        asp-route-id="@user.Id">Abilita</a>
-                                }
+{
+    <a class="btn btn-sm btn-outline-warning @(user.IsProtected ? "disabled pe-none" : "")"
+       asp-page="Disable" asp-route-id="@user.Id"
+       aria-disabled="@(user.IsProtected ? "true" : "false")"
+       tabindex="@(user.IsProtected ? "-1" : "0")"
+       title="@(user.IsProtected ? "Utente protetto: non può essere disabilitato" : "Disabilita utente")">
+        Disabilita
+    </a>
+}
+else
+{
+    <a class="btn btn-sm btn-outline-success @(user.IsProtected ? "disabled pe-none" : "")"
+       asp-page="Enable" asp-route-id="@user.Id"
+       aria-disabled="@(user.IsProtected ? "true" : "false")"
+       tabindex="@(user.IsProtected ? "-1" : "0")"
+       title="@(user.IsProtected ? "Utente protetto: non può essere riabilitato" : "Abilita utente")">
+        Abilita
+    </a>
+}
                             </td>
                         </tr>
                     }

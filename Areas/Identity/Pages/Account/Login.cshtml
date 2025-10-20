@@ -1,0 +1,75 @@
+@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Accedi";
+}
+
+<!-- Titolo della pagina -->
+<h2 class="auth-title">Accedi al Sistema</h2>
+<p class="auth-subtitle">Inserisci le tue credenziali per accedere</p>
+
+<!-- Sezione per messaggi di errore generali -->
+<div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+<!-- Form di login -->
+<!-- method="post": invia i dati al server con metodo POST (sicuro) -->
+<form id="account" method="post">
+
+    <!-- Campo EMAIL -->
+    <div class="mb-3">
+        <!-- Label per accessibilità (screen reader) -->
+        <!-- asp-for: collega automaticamente a Model.Input.Email -->
+        <label asp-for="Input.Email" class="form-label">Email</label>
+
+        <!-- Input email con validazione HTML5 -->
+        <!-- class="form-control": stile Bootstrap -->
+        <!-- autocomplete="username": aiuta i password manager del browser -->
+        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true"
+            placeholder="tua.email@esempio.it" />
+
+        <!-- Messaggio di errore validazione (appare se email non valida) -->
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+
+    <!-- Campo PASSWORD -->
+    <div class="mb-3">
+        <label asp-for="Input.Password" class="form-label">Password</label>
+
+        <!-- Input password (i caratteri sono nascosti) -->
+        <!-- type="password": nasconde i caratteri digitati -->
+        <!-- autocomplete="current-password": aiuta i password manager -->
+        <input asp-for="Input.Password" type="password" class="form-control" autocomplete="current-password"
+            aria-required="true" placeholder="••••••••" />
+
+        <!-- Messaggio di errore validazione -->
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+    </div>
+
+    <!-- Checkbox RICORDAMI -->
+    <div class="mb-3 form-check">
+        <!-- Checkbox per mantenere la sessione attiva -->
+        <input asp-for="Input.RememberMe" type="checkbox" class="form-check-input" />
+
+        <!-- Label cliccabile collegata alla checkbox -->
+        <label asp-for="Input.RememberMe" class="form-check-label">
+            Ricordami
+        </label>
+    </div>
+
+    <!-- Pulsante ACCEDI -->
+    <div class="mb-3">
+        <!-- type="submit": invia il form quando cliccato -->
+        <!-- btn-auth-primary: classe CSS personalizzata (colore medicale) -->
+        <button type="submit" class="btn btn-auth-primary">
+            Accedi
+        </button>
+    </div>
+
+</form>
+
+@section Scripts {
+    <!-- Include gli script di validazione lato client (jQuery Validation) -->
+    <!-- Validano i campi PRIMA di inviare il form al server (più veloce per l'utente) -->
+    <partial name="_ValidationScriptsPartial" />
+}

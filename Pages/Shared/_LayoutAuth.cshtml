@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <!-- Meta tag per il set di caratteri UTF-8 (supporto caratteri italiani: à, è, ì, ò, ù) -->
+    <meta charset="utf-8" />
+
+    <!-- Responsive: adatta il layout ai dispositivi mobili -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Titolo dinamico della pagina (es: "Login - ClinicBooking") -->
+    <title>@ViewData["Title"] - ClinicBooking</title>
+
+    <!-- Collegamento a Bootstrap 5 (framework CSS per lo styling) -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Collegamento al CSS personalizzato per l'autenticazione -->
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+</head>
+
+<body>
+    <!-- Container principale che occupa tutta l'altezza della finestra -->
+    <!-- Classe d-flex: display flex per centrare il contenuto -->
+    <!-- Classe align-items-center: centra verticalmente -->
+    <!-- Classe justify-content-center: centra orizzontalmente -->
+    <div class="auth-container d-flex align-items-center justify-content-center">
+
+        <!-- Card centrale contenente il form di login/logout -->
+        <div class="auth-card">
+
+            <!-- Area LOGO - Placeholder per l'immagine del logo -->
+            <div class="auth-logo">
+                <!-- TODO: Sostituire con <img src="~/images/logo.png" alt="Logo Clinica" /> -->
+                <!-- Per ora mostriamo un'icona medica Unicode e il nome -->
+                <div class="auth-logo-icon">🏥</div>
+                <h1>ClinicBooking</h1>
+            </div>
+
+            <!-- Contenuto dinamico della pagina (Login.cshtml o Logout.cshtml) -->
+            <!-- Il metodo RenderBody() inserisce qui il contenuto della pagina figlia -->
+            @RenderBody()
+
+            <!-- Footer con informazioni copyright -->
+            <div class="auth-footer">
+                &copy; @DateTime.Now.Year - Sistema di Prenotazione Clinica
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Script JavaScript di Bootstrap (necessario per funzionalità interattive) -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Sezione per script aggiuntivi delle pagine figlie (es: validazione) -->
+    <!-- required: false = la sezione è opzionale -->
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

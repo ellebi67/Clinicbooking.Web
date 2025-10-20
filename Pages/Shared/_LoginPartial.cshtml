@@ -5,27 +5,46 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        <!-- Utente autenticato: mostra email e logout -->
+        <!-- ============================================
+                 UTENTE AUTENTICATO: mostra email e logout
+                 ============================================ -->
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-                Ciao @User.Identity!.Name!
+            <!-- Link al profilo utente (gestione account) -->
+            <!-- asp-area="Identity": indica che la pagina è nell'area Identity -->
+            <!-- asp-page="/Account/Manage/Index": pagina di gestione profilo -->
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index"
+                title="Gestisci il tuo account">
+                <!-- Mostra il nome dell'utente (email) -->
+                <!-- User.Identity.Name contiene l'email dell'utente loggato -->
+                Ciao, @User.Identity!.Name!
             </a>
         </li>
+
         <li class="nav-item">
+            <!-- Form per il logout (deve essere POST per sicurezza) -->
+            <!-- asp-route-returnUrl: dopo logout torna alla home page -->
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout"
                 asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
-                <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                <!-- Pulsante logout con stile link -->
+                <!-- btn btn-link: Bootstrap - pulsante che sembra un link -->
+                <button type="submit" class="nav-link btn btn-link text-dark">
+                    Esci
+                </button>
             </form>
         </li>
     }
     else
     {
-        <!-- Utente non autenticato: mostra registrazione e login -->
+        <!-- ============================================
+                 UTENTE NON AUTENTICATO: mostra solo login
+                 ============================================ -->
+        <!-- RIMOSSO: Link "Registrati" (non vogliamo registrazioni pubbliche) -->
+
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Registrati</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            <!-- Link alla pagina di login -->
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">
+                Accedi
+            </a>
         </li>
     }
 </ul>

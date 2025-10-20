@@ -1,0 +1,17 @@
+@page "{id}"
+@model ClinicBooking.Web.Pages.Admin.Users.DisableModel
+@{
+    ViewData["Title"] = "Disabilita utente";
+}
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+    <p class="text-muted">Utente: <strong>@Model.Email</strong></p>
+    <form method="post">
+        <input type="hidden" asp-for="Id" />
+        <div class="alert alert-warning">
+            L'utente verrà disabilitato impostando il blocco (Lockout). Potrai riabilitarlo in qualsiasi momento.
+        </div>
+        <button type="submit" class="btn btn-danger">Conferma disabilitazione</button>
+        <a asp-page="Index" class="btn btn-outline-secondary">Annulla</a>
+    </form>
+</div>

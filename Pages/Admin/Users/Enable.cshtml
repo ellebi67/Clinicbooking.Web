@@ -1,0 +1,14 @@
+@page "{id}"
+@model ClinicBooking.Web.Pages.Admin.Users.EnableModel
+@{
+    ViewData["Title"] = "Abilita utente";
+}
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+    <p class="text-muted">Utente: <strong>@Model.Email</strong></p>
+    <form method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-success">Conferma abilitazione</button>
+        <a asp-page="Index" class="btn btn-outline-secondary">Annulla</a>
+    </form>
+</div>

@@ -30,6 +30,7 @@ public class IndexModel : PageModel
         {
             // Ottieni i ruoli per ogni utente
             var roles = await _userManager.GetRolesAsync(user);
+            var isProtected = roles.Contains("Admin") || roles.Contains("Secretary");
 
             Users.Add(new UserViewModel
             {
@@ -38,7 +39,8 @@ public class IndexModel : PageModel
                 IsActive = !user.LockoutEnabled ||         // Utente attivo se non bloccato
                           user.LockoutEnd == null ||       // oppure senza scadenza blocco
                           user.LockoutEnd <= DateTimeOffset.Now, // oppure blocco scaduto
-                Roles = string.Join(", ", roles)           // Lista ruoli separati da virgola
+                Roles = string.Join(", ", roles),           // Lista ruoli separati da virgola
+                IsProtected = isProtected
             });
         }
     }
@@ -51,4 +53,5 @@ public class UserViewModel
     public string Email { get; set; } = "";
     public bool IsActive { get; set; }
     public string Roles { get; set; } = "";
+    public bool IsProtected { get; set; }
 }

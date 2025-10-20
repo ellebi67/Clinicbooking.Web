@@ -1,0 +1,39 @@
+@page
+@model LogoutModel
+
+@{
+    ViewData["Title"] = "Disconnessione";
+}
+
+<!-- Titolo della pagina -->
+<h2 class="auth-title">Disconnessione</h2>
+<p class="auth-subtitle">Sei sicuro di voler uscire dal sistema?</p>
+
+<!-- Form di logout -->
+<!-- method="post": il logout deve essere sempre POST per sicurezza (prevenzione CSRF) -->
+<form method="post">
+
+    <!-- Messaggio informativo -->
+    <div class="alert alert-info mb-4" role="alert">
+        <strong>Attenzione:</strong> Stai per disconnetterti dal sistema.
+        Dovrai effettuare nuovamente il login per accedere.
+    </div>
+
+    <!-- Pulsante ESCI -->
+    <div class="mb-3">
+        <!-- type="submit": invia il form quando cliccato -->
+        <!-- btn-auth-primary: classe CSS personalizzata (colore medicale) -->
+        <button type="submit" class="btn btn-auth-primary">
+            Esci dal Sistema
+        </button>
+    </div>
+
+    <!-- Link per annullare e tornare indietro -->
+    <div class="text-center">
+        <!-- asp-page="/Index": torna alla home page -->
+        <a asp-page="/Index" class="auth-link">
+            ← Torna alla pagina principale
+        </a>
+    </div>
+
+</form>
