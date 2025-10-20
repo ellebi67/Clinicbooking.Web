@@ -1,3 +1,56 @@
-﻿@{
-    Layout = "_Layout";
+@using Microsoft.AspNetCore.Identity
+@using ClinicBooking.Web.Services
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject ILayoutService LayoutService
+
+@{
+    // ============================================
+    // SELEZIONE DINAMICA DEL LAYOUT
+    // In base al ruolo dell'utente loggato
+    // ============================================
+
+    string layoutToUse = "_Layout"; // Layout di default (fallback)
+
+    // Verifica se l'utente è autenticato
+    if (SignInManager.IsSignedIn(User))
+    {
+        try
+        {
+            // 1. Ottieni l'utente corrente dal database
+            var currentUser = await UserManager.GetUserAsync(User);
+
+            if (currentUser != null)
+            {
+                // 2. Ottieni tutti i ruoli dell'utente
+                var userRoles = await UserManager.GetRolesAsync(currentUser);
+
+                // 3. Chiama il servizio per ottenere il layout corretto
+                // Il servizio consulta il database (tabelle Themes e RoleThemes)
+                layoutToUse = await LayoutService.GetLayoutForUserAsync(userRoles);
+
+                // 4. Log per debug (visibile nel terminale durante sviluppo)
+                // Aiuta a capire quale layout viene usato
+                var rolesString = string.Join(", ", userRoles);
+                Console.WriteLine($"[Layout] Utente: {currentUser.Email} | Ruoli: [{rolesString}] | Layout: {layoutToUse}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // In caso di errore, usa layout di default
+            // L'app non si blocca mai per problemi di layout
+            Console.WriteLine($"[Layout] ERRORE durante selezione layout: {ex.Message}");
+            layoutToUse = "_Layout"; // Fallback sicuro
+        }
+    }
+    else
+    {
+        // Utente NON autenticato
+        // Usa il layout standard (con link "Accedi")
+        Console.WriteLine("[Layout] Utente non autenticato - uso layout standard");
+        layoutToUse = "_Layout";
+    }
+
+    // 5. Imposta il layout selezionato
+    Layout = $"/Pages/Shared/{layoutToUse}.cshtml";
 }

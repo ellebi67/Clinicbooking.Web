@@ -1,0 +1,62 @@
+/* =====================================================
+   TEMA ADMIN - Colori Standard Bootstrap
+   Layout minimale per amministratori
+   ===================================================== */
+
+/* Variabili CSS per colori admin */
+:root {
+    --admin-primary: #1b6ec2;
+    --admin-primary-dark: #1861ac;
+    --admin-secondary: #0077cc;
+    --admin-bg: #ffffff;
+    --admin-text: #212529;
+    --admin-border: #e5e5e5;
+}
+
+/* Navbar admin - Colore standard Bootstrap */
+.navbar {
+    background-color: var(--admin-bg) !important;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.navbar-brand {
+    color: var(--admin-primary) !important;
+    font-weight: 600;
+}
+
+/* Link menu admin */
+.nav-link {
+    color: var(--admin-text) !important;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--admin-primary) !important;
+}
+
+/* Pulsanti primari admin */
+.btn-primary {
+    background-color: var(--admin-primary);
+    border-color: var(--admin-primary-dark);
+}
+
+.btn-primary:hover {
+    background-color: var(--admin-primary-dark);
+    border-color: var(--admin-primary-dark);
+}
+
+/* Focus states */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(27, 110, 194, 0.25);
+}
+
+/* Footer admin */
+.footer {
+    background-color: var(--admin-bg);
+    border-top: 1px solid var(--admin-border);
+    color: var(--admin-text);
+}

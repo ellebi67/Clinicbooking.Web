@@ -151,4 +151,108 @@ public static class SeedData
             }
         }
     }
+
+    /// <summary>
+    /// Popola le tabelle Themes e RoleThemes con i dati iniziali
+    /// Crea i 3 temi (Admin, Secretary, Doctor) e li associa ai rispettivi ruoli
+    /// </summary>
+    public static async Task SeedThemesAsync(AppDbContext context)
+    {
+        // Verifica se ci sono già temi nel database
+        if (await context.Themes.AnyAsync())
+        {
+            // Temi già presenti, non fare nulla
+            return;
+        }
+
+        // ============================================
+        // CREAZIONE DEI 3 TEMI
+        // ============================================
+
+        var themes = new List<Theme>
+    {
+        // TEMA ADMIN - Layout minimale con Bootstrap standard
+        new Theme
+        {
+            ThemeName = "Admin Standard",
+            Description = "Layout minimale per amministratori con menu ridotto",
+            LayoutFileName = "_LayoutAdmin",
+            CssFileName = "admin-theme.css",
+            IsActive = true
+        },
+
+        // TEMA SECRETARY - Layout completo con colori blu professionali
+        new Theme
+        {
+            ThemeName = "Secretary Professional",
+            Description = "Layout completo per segreteria con tutti i menu operativi",
+            LayoutFileName = "_LayoutSecretary",
+            CssFileName = "secretary-theme.css",
+            IsActive = true
+        },
+
+        // TEMA DOCTOR - Layout semplificato con colori verdi rilassanti
+        new Theme
+        {
+            ThemeName = "Doctor Relaxed",
+            Description = "Layout semplificato per medici con vista appuntamenti",
+            LayoutFileName = "_LayoutDoctor",
+            CssFileName = "doctor-theme.css",
+            IsActive = true
+        }
+    };
+
+        // Aggiungi i temi al database
+        await context.Themes.AddRangeAsync(themes);
+        await context.SaveChangesAsync();
+
+        // ============================================
+        // ASSOCIAZIONE RUOLI → TEMI
+        // ============================================
+
+        // Recupera i temi appena creati (ora hanno gli ID assegnati dal database)
+        var adminTheme = await context.Themes
+            .FirstAsync(t => t.ThemeName == "Admin Standard");
+
+        var secretaryTheme = await context.Themes
+            .FirstAsync(t => t.ThemeName == "Secretary Professional");
+
+        var doctorTheme = await context.Themes
+            .FirstAsync(t => t.ThemeName == "Doctor Relaxed");
+
+        var roleThemes = new List<RoleTheme>
+    {
+        // Admin → Admin Standard
+        new RoleTheme
+        {
+            RoleName = "Admin",
+            ThemeId = adminTheme.ThemeId,
+            IsDefault = true
+        },
+
+        // Secretary → Secretary Professional
+        new RoleTheme
+        {
+            RoleName = "Secretary",
+            ThemeId = secretaryTheme.ThemeId,
+            IsDefault = true
+        },
+
+        // Doctor → Doctor Relaxed
+        new RoleTheme
+        {
+            RoleName = "Doctor",
+            ThemeId = doctorTheme.ThemeId,
+            IsDefault = true
+        }
+    };
+
+        // Aggiungi le associazioni al database
+        await context.RoleThemes.AddRangeAsync(roleThemes);
+        await context.SaveChangesAsync();
+
+        Console.WriteLine("✅ Temi e associazioni ruolo-tema creati con successo!");
+    }
+
+
 }

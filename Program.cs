@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.HttpOverrides;
+using ClinicBooking.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,10 @@ builder.Services.AddRazorPages(options =>
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// 🆕 REGISTRAZIONE SERVIZIO LAYOUT
+// Scoped: una nuova istanza per ogni richiesta HTTP
+// Il servizio avrà accesso al DbContext della richiesta corrente
+builder.Services.AddScoped<ILayoutService, LayoutService>();
 
 // Configurazione sistema Identity per autenticazione
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
@@ -70,6 +75,8 @@ using (var scope = app.Services.CreateScope()) // Crea scope per dependency inje
     await SeedData.AssignRolesToUsersAsync(userManager);  // Infine assegna ruoli agli utenti
 
     await SeedData.SyncDoctorsWithUsersAsync(userManager, context); // Nuova sincronizzazione
+    // 🆕 Popola temi e associazioni ruolo-tema
+    await SeedData.SeedThemesAsync(context);
 }
 
 // Configure the HTTP request pipeline.

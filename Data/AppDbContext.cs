@@ -23,6 +23,13 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
   // 1) Aggiungere questa proprietà tra i DbSet esistenti
   public DbSet<Booking> Bookings => Set<Booking>();
 
+  // Tabelle per il sistema di gestione layout multi-ruolo
+  // Themes: contiene i temi disponibili (layout + CSS)
+  public DbSet<Theme> Themes => Set<Theme>();
+
+  // RoleThemes: associa ogni ruolo al suo tema
+  public DbSet<RoleTheme> RoleThemes => Set<RoleTheme>();
+
 
   protected override void OnModelCreating(ModelBuilder mb)
   {
@@ -114,8 +121,6 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
 
 
 
-
-
     // Configurazione chiave composta della tabella ponte (DoctorId, SpecializationId)
     mb.Entity<DoctorSpecialization>()
       .HasKey(ds => new { ds.DoctorId, ds.SpecializationId });
@@ -171,6 +176,86 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
       eb.Ignore("DoctorId1");
       eb.Ignore("PatientId1");
     });
+
+
+
+    // =======================================
+    // CONFIGURAZIONE ENTITÀ: Theme
+    // =======================================
+    mb.Entity<Theme>(eb =>
+    {
+      eb.ToTable("Themes");
+      // Nome tabella sul database SQL
+
+      eb.HasKey(t => t.ThemeId);
+      // Chiave primaria
+
+      // Indice sul nome del tema per ricerche veloci
+      eb.HasIndex(t => t.ThemeName)
+    .HasDatabaseName("IX_Themes_ThemeName");
+
+      // Proprietà obbligatorie
+      eb.Property(t => t.ThemeName)
+    .IsRequired()
+    .HasMaxLength(100);
+
+      eb.Property(t => t.LayoutFileName)
+    .IsRequired()
+    .HasMaxLength(255);
+
+      eb.Property(t => t.CssFileName)
+    .IsRequired()
+    .HasMaxLength(255);
+
+      eb.Property(t => t.Description)
+    .HasMaxLength(500);
+
+      eb.Property(t => t.IsActive)
+    .HasDefaultValue(true);
+
+      eb.Property(t => t.CreatedDate)
+    .HasDefaultValueSql("GETDATE()");
+      // Imposta automaticamente la data corrente SQL Server
+    });
+
+    // =======================================
+    // CONFIGURAZIONE ENTITÀ: RoleTheme
+    // =======================================
+    mb.Entity<RoleTheme>(eb =>
+    {
+      eb.ToTable("RoleThemes");
+      // Nome tabella sul database SQL
+
+      eb.HasKey(rt => rt.RoleThemeId);
+      // Chiave primaria
+
+      // Relazione con Theme (molti-a-uno)
+      // Un tema può essere usato da più ruoli
+      // Un ruolo ha un solo tema attivo
+      eb.HasOne(rt => rt.Theme)
+    .WithMany()
+    .HasForeignKey(rt => rt.ThemeId)
+    .OnDelete(DeleteBehavior.Restrict)
+    .HasConstraintName("FK_RoleThemes_Themes_ThemeId");
+      // Restrict: non permette di cancellare un tema se è associato a un ruolo
+
+      // Proprietà obbligatorie
+      eb.Property(rt => rt.RoleName)
+    .IsRequired()
+    .HasMaxLength(50);
+
+      eb.Property(rt => rt.IsDefault)
+    .HasDefaultValue(true);
+
+      // Indice unico: un ruolo può avere un solo tema di default
+      eb.HasIndex(rt => new { rt.RoleName, rt.IsDefault })
+    .HasDatabaseName("IX_RoleThemes_RoleName_IsDefault")
+    .IsUnique(false);
+      // False perché in futuro potremmo avere più temi per ruolo
+    });
+
+
+
 
   }
 

@@ -1,0 +1,52 @@
+/* TEMA DOCTOR - VERSIONE MINIMA FUNZIONANTE */
+
+:root {
+    --doctor-primary: #16a085;
+    --doctor-primary-dark: #117a65;
+}
+
+/* Body bianco */
+body {
+    background-color: #ffffff !important;
+}
+
+/* Navbar VERDE con testo BIANCO */
+header,
+.navbar,
+nav {
+    background-color: #16a085 !important;
+}
+
+.navbar-brand {
+    color: white !important;
+    font-weight: 700;
+}
+
+/* TUTTI i link della navbar BIANCHI */
+.navbar .nav-link,
+.navbar-nav .nav-link,
+.nav-item .nav-link,
+a.nav-link {
+    color: white !important;
+    font-weight: 500;
+}
+
+.navbar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Pulsanti */
+.btn-primary {
+    background-color: var(--doctor-primary);
+    border-color: var(--doctor-primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--doctor-primary-dark);
+}
+
+/* Footer */
+.footer {
+    background-color: var(--doctor-primary);
+    color: white;
+}
